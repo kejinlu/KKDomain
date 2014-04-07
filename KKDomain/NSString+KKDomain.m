@@ -10,7 +10,7 @@
 
 @implementation NSString (KKDomain)
 
-- (NSDictionary *)rulesTree{
+- (NSDictionary *)etldRulesTree{
     static NSDictionary *rules = nil;
     if (!rules) {
         for (NSBundle *bundle in [NSBundle allBundles]) {
@@ -68,8 +68,8 @@
         return nil;
     }
     
-    NSString *topLevelDomain = [self searchForHostComponents:hostComponents inNode:[self rulesTree]];
-    return topLevelDomain;
+    NSString *registeredDomain = [self searchForHostComponents:hostComponents inNode:[self etldRulesTree]];
+    return registeredDomain;
 }
 
 
