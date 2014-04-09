@@ -15,4 +15,7 @@
     return [self.host registeredDomain];
 }
 
+- (NSString *)publicSuffix{
+    return [self.host publicSuffix];
+}
 @end

@@ -12,4 +12,6 @@
 
 - (NSString *)registeredDomain;
 
+- (NSString *)publicSuffix;
+
 @end

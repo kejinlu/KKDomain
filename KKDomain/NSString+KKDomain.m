@@ -10,7 +10,10 @@
 
 @implementation NSString (KKDomain)
 
-- (NSDictionary *)etldRulesTree{
+#pragma mark -
+#pragma mark Private Methods
+
+- (NSDictionary *)etldRuleTree{
     static NSDictionary *rules = nil;
     if (!rules) {
         for (NSBundle *bundle in [NSBundle allBundles]) {
@@ -24,8 +27,8 @@
     return rules;
 }
 
-- (NSString *)searchForHostComponents:(NSMutableArray *)components inNode:(NSDictionary *)node{
-    if (node[@"!"]) {
+- (NSString *)processRegisteredDomainForHostComponents:(NSMutableArray *)components withRuleTree:(NSDictionary *)ruleTree{
+    if (ruleTree[@"!"]) {
         return @"";
     }
     
@@ -38,10 +41,10 @@
     
     NSString *result = nil;
     
-    if (node[lastComponent]) {
-        result = [self searchForHostComponents:components inNode:node[lastComponent]];
-    } else if (node[@"*"]) {
-        result = [self searchForHostComponents:components inNode:node[@"*"]];
+    if (ruleTree[lastComponent]) {
+        result = [self processRegisteredDomainForHostComponents:components withRuleTree:ruleTree[lastComponent]];
+    } else if (ruleTree[@"*"]) {
+        result = [self processRegisteredDomainForHostComponents:components withRuleTree:ruleTree[@"*"]];
     } else {
         return lastComponent;
     }
@@ -57,6 +60,43 @@
     }
 }
 
+- (NSString *)processPublicSuffixForComponents:(NSMutableArray *)components withRuleTree:(NSDictionary *)ruleTree{
+    
+    if (ruleTree[@"!"]) {
+        return @"!";
+    }
+    
+    if ([components count] == 0) {
+        return @"";
+    }
+    
+    NSString *lastComponent = [[components lastObject] lowercaseString];
+    [components removeLastObject];
+    
+    NSString *result = nil;
+    if (ruleTree[lastComponent]) {
+        result = [self processPublicSuffixForComponents:components withRuleTree:ruleTree[lastComponent]];
+    } else if (ruleTree[@"*"]) {
+        result = [self processPublicSuffixForComponents:components withRuleTree:ruleTree[@"*"]];
+    } else {
+        return @"";
+    }
+    
+    if (result) {
+        if ([result isEqualToString:@"!"]) {
+            return @"";
+        } else if ([result isEqualToString:@""]) {
+            return lastComponent;
+        }else{
+            return [NSString stringWithFormat:@"%@.%@",result,lastComponent];
+        }
+    } else {
+        return @"";
+    }
+}
+
+#pragma mark -
+#pragma mark Public
 
 - (NSString *)registeredDomain{
     if ([self hasPrefix:@"."] || [self hasSuffix:@"."]) {
@@ -68,9 +108,13 @@
         return nil;
     }
     
-    NSString *registeredDomain = [self searchForHostComponents:hostComponents inNode:[self etldRulesTree]];
-    return registeredDomain;
+    return [self processRegisteredDomainForHostComponents:hostComponents withRuleTree:[self etldRuleTree]];
 }
 
+
+- (NSString *)publicSuffix{
+    NSMutableArray *components = [[self componentsSeparatedByString:@"."] mutableCopy];
+    return [self processPublicSuffixForComponents:components withRuleTree:[self etldRuleTree]];
+}
 
 @end
