@@ -1,7 +1,7 @@
 KKDomain
 ========
 
-A objc library which gives access to the PSL (Public Suffix List).
+A objc library which gives access to the [PSL](https://publicsuffix.org/) (Public Suffix List).
 
 ### What is PSL?
 The Public Suffix List is intended to enumerate all domain suffixes controlled by registrars.   
