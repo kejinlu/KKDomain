@@ -10,6 +10,7 @@ Pod::Spec.new do |s|
   	branch => 'master' 
   }
 
-  s.source_files   = 'KKDomain/*.{h,m}'
+  s.source_files   = "KKDomain/*.{h,m}"
+  spec.resource = "KKDomain/Resources/etld.plist"
   s.requires_arc  = true
 end
