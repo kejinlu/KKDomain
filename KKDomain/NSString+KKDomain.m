@@ -28,10 +28,6 @@
 }
 
 - (NSString *)processRegisteredDomainForHostComponents:(NSMutableArray *)components withRuleTree:(NSDictionary *)ruleTree{
-    if (ruleTree[@"!"]) {
-        return @"";
-    }
-    
     if ([components count] == 0) {
         return nil;
     }
@@ -42,19 +38,20 @@
     NSString *result = nil;
     
     if (ruleTree[lastComponent]) {
-        result = [self processRegisteredDomainForHostComponents:components withRuleTree:ruleTree[lastComponent]];
+        NSDictionary *subTree = ruleTree[lastComponent];
+        if (subTree[@"!"]) {
+            return lastComponent;
+        } else {
+            result = [self processRegisteredDomainForHostComponents:components withRuleTree:ruleTree[lastComponent]];
+        }
     } else if (ruleTree[@"*"]) {
         result = [self processRegisteredDomainForHostComponents:components withRuleTree:ruleTree[@"*"]];
     } else {
         return lastComponent;
     }
     
-    if (result) {
-        if ([result isEqualToString:@""]) {
-            return lastComponent;
-        } else {
-            return [NSString stringWithFormat:@"%@.%@",result,lastComponent];
-        }
+    if (result && [result length] > 0) {
+        return [NSString stringWithFormat:@"%@.%@",result,lastComponent];
     } else {
         return nil;
     }
