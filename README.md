@@ -8,8 +8,6 @@ The Public Suffix List is intended to enumerate all domain suffixes controlled b
 A "public suffix" is also known by the older term effective top-level domain (eTLD).
 
 
-### KKDomain
-##### 1.ETLDPlistGenerator
-In the project there is a target named "ETLDPlistGenerator",you can compile and run it with XCode to regenerate the effective TLD tree structure. The effective TLD tree file also support IDNA Encoded domain.
+### How to use KKDomain?
 
-##### 2.KKDomain Category
+
