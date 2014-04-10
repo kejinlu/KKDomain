@@ -61,13 +61,8 @@
 }
 
 - (NSString *)processPublicSuffixForComponents:(NSMutableArray *)components withRuleTree:(NSDictionary *)ruleTree{
-    
-    if (ruleTree[@"!"]) {
-        return @"!";
-    }
-    
     if ([components count] == 0) {
-        return @"";
+        return nil;
     }
     
     NSString *lastComponent = [[components lastObject] lowercaseString];
@@ -75,23 +70,22 @@
     
     NSString *result = nil;
     if (ruleTree[lastComponent]) {
-        result = [self processPublicSuffixForComponents:components withRuleTree:ruleTree[lastComponent]];
+        NSDictionary *subTree = ruleTree[lastComponent];
+        if (subTree[@"!"]) {
+            return nil;
+        } else {
+            result = [self processPublicSuffixForComponents:components withRuleTree:subTree];
+        }
     } else if (ruleTree[@"*"]) {
         result = [self processPublicSuffixForComponents:components withRuleTree:ruleTree[@"*"]];
     } else {
-        return @"";
+        return nil;
     }
     
-    if (result) {
-        if ([result isEqualToString:@"!"]) {
-            return @"";
-        } else if ([result isEqualToString:@""]) {
-            return lastComponent;
-        }else{
-            return [NSString stringWithFormat:@"%@.%@",result,lastComponent];
-        }
+    if (result && [result length] > 0) {
+        return [NSString stringWithFormat:@"%@.%@",result,lastComponent];
     } else {
-        return @"";
+        return lastComponent;
     }
 }
 
