@@ -108,13 +108,15 @@
         return nil;
     }
     
-    return [self processRegisteredDomainForHostComponents:hostComponents withRuleTree:[self etldRuleTree]];
+    NSString *registeredDomain = [self processRegisteredDomainForHostComponents:hostComponents withRuleTree:[self etldRuleTree]];
+    return registeredDomain;
 }
 
 
 - (NSString *)publicSuffix{
     NSMutableArray *components = [[self componentsSeparatedByString:@"."] mutableCopy];
-    return [self processPublicSuffixForComponents:components withRuleTree:[self etldRuleTree]];
+    NSString *publicSuffix = [self processPublicSuffixForComponents:components withRuleTree:[self etldRuleTree]];
+    return publicSuffix;
 }
 
 @end

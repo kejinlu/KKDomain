@@ -9,34 +9,40 @@
 #import <Foundation/Foundation.h>
 #import "NSStringPunycodeAdditions.h"
 
-void buildDomain(NSMutableDictionary *node, NSMutableArray *domainParts){
+void buildETLDRuleTree(NSMutableDictionary *node, NSMutableArray *domainParts){
     if ([domainParts count] ==0) {
         return;
     }
     
-    NSString *domainPart = [domainParts lastObject];
+    NSString *lastDomainPart = [domainParts lastObject];
     [domainParts removeLastObject];
     
     BOOL notDomain = NO;
-    if ([domainPart hasPrefix:@"!"]) {
+    if ([lastDomainPart hasPrefix:@"!"]) {
         notDomain = YES;
-        domainPart = [domainPart substringFromIndex:1];
+        lastDomainPart = [lastDomainPart substringFromIndex:1];
     }
     
-    NSMutableDictionary *childNode = node[domainPart];
+    NSMutableDictionary *childNode = node[lastDomainPart];
     if (!childNode) {
         childNode = [NSMutableDictionary dictionary];
         if (notDomain) {
             [childNode setObject:@{} forKey:@"!"];
         }
-        [node setObject:childNode forKey:domainPart];
+        [node setObject:childNode forKey:lastDomainPart];
     }
     
     if (!notDomain && [domainParts count] > 0) {
-        buildDomain(childNode, domainParts);
+        buildETLDRuleTree(childNode, domainParts);
     }
 }
 
+/*
+ 此target的目的是构建 KKDomain所依赖的用于描述 Public Suffix规则的plist文件
+ 项目中默认已经生成了一份plist文件，如果需要更新plist文件，则在项目中运行此target
+ 目标文件输出到$(SRCROOT)/KKDomain/Resources/etld.plist  
+ SRCROOT环境变量是预先设置在target的环境变量中的
+ */
 int main(int argc, const char * argv[])
 {
     
@@ -59,11 +65,11 @@ int main(int argc, const char * argv[])
             NSString *ruleLineIDNAEncoded = [ruleLine IDNAEncodedString];
             
             NSMutableArray *ruleComponents = [[ruleLine componentsSeparatedByString:@"."] mutableCopy];
-            buildDomain(ruleDictionary, ruleComponents);
+            buildETLDRuleTree(ruleDictionary, ruleComponents);
             
             if (![ruleLine isEqualToString:ruleLineIDNAEncoded]) {
                 NSMutableArray *ruleIDNAEncodedComponents = [[ruleLineIDNAEncoded componentsSeparatedByString:@"."] mutableCopy];
-                buildDomain(ruleDictionary, ruleIDNAEncodedComponents);
+                buildETLDRuleTree(ruleDictionary, ruleIDNAEncodedComponents);
             }
         }
         
