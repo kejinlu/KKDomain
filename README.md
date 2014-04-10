@@ -10,4 +10,15 @@ A "public suffix" is also known by the older term effective top-level domain (eT
 
 ### How to use KKDomain?
 
-If you use cocoapods
+If you use cocoapods just
+
+	pod 'KKDomain', :git => 'https://github.com/kejinlu/KKDomain.git'
+	
+else copy category files to your project
+
+	#import "NSString+KKDomain.h"
+	......
+	
+	NSString *host = @"www.taobao.com";
+    NSLog(@"publicSuffix: %@",[host publicSuffix]);
+    NSLog(@"registeredDomain: %@",[host registeredDomain]);
