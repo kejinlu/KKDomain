@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
   s.author   = '卢克'
   s.source   = { 
   	:git => 'https://github.com/kejinlu/KKDomain.git', 
-  	branch => 'master' 
+  	:branch => 'master' 
   }
 
   s.source_files   = "KKDomain/*.{h,m}"

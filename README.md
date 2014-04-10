@@ -10,4 +10,4 @@ A "public suffix" is also known by the older term effective top-level domain (eT
 
 ### How to use KKDomain?
 
-
+If you use cocoapods
