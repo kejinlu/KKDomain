@@ -11,6 +11,6 @@ Pod::Spec.new do |s|
   }
 
   s.source_files   = "KKDomain/*.{h,m}"
-  spec.resource = "KKDomain/Resources/etld.plist"
+  s.resource = "KKDomain/Resources/etld.plist"
   s.requires_arc  = true
 end
